@@ -1,0 +1,12 @@
+{
+  "name": "worksheet-generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "hanzi-writer": "^3.5.0",
+    "hanzi-writer-data": "^2.0.1",
+    "pdfkit": "^0.13.0",
+    "svg-to-pdfkit": "^0.1.8"
+  }
+}
