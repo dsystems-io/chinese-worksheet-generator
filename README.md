@@ -64,4 +64,6 @@ No need to install these separately, just for convenience if you want to edit th
 - [ ] Support more page sizes
 - [ ] Option to add more practice lines
 - [ ] Color options
+- [ ] Option to display pinyin
+- [ ] Option to display definition
 
