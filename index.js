@@ -31,7 +31,6 @@ program
     const doc = new PDFDocument({size: opts.size});
     // Remove remove non-chinese characters
     const cleanCharacters = opts.characters.replace(/[^\u4E00-\u9FFF]+/g, '');
-    console.log(cleanCharacters);
     const characterList = cleanCharacters.split('');
     const { hintSize, hintSpacing, hintMargin, hintXCorrection, gridSpacing, gridSize, gridCountPerLine, marginTop, marginLeft, rowMargin, characterSize, pageRows} = sizeData[opts.size];
     // Disable hints if tracing enabled
