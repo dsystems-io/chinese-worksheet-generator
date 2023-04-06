@@ -32,7 +32,7 @@ Default: `的一是不了人我在有他这为之大来以个中上们`
 
 ### -s, --size
 
-The paper size to use. Currently only supports A6.
+The paper size to use. Currently supports A5 and A6.
 
 Default: `A6`
 

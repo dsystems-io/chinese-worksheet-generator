@@ -15,36 +15,46 @@ program
     .description('CLI to Generate Hanzi Worksheets')
     .version('0.1.0')
     .option('-f, --filename', 'Where to save the generated file', 'example.pdf')
-    .option('-c, --characters <strng>', 'Add the characters for the worksheet', '的一是不了人我在有他这为之大来以个中上们')
+    .option('-c, --characters <strng>', 'Add the characters for the worksheet', '的一是不r 了人$我在有他这为之}大来以个中上们')
     .option('-s, --size <size>', 'Select Paper Size (A6)', 'A6')
     .option('-hh, --hint', 'Include a hint line with stroke order', false)
     .option('-t, --tracing', 'Include tracing prompts on the grid', false)
     .parse();
 
     const opts = program.opts();
+    // Ensure the page size is supported, otherwise stop processing
     if(!sizesAvailable.includes(opts.size)) {
-        console.log(`Selected size [${opts.size}] is not supported. Select one of [${sizesAvailable.join('], [')}]`.red)
+        console.log(`Selected size [${opts.size}] is not supported. Select one of [${sizesAvailable.join('], [')}]`.red);
+        process.exit();
     }
-    else {
-        const doc = new PDFDocument({size: opts.size});
-        const characterList = opts.characters.split('');
-        const { hintSize, hintSpacing, hintMargin, hintXCorrection, gridSpacing, gridSize, gridCountPerLine, marginTop, marginLeft, rowMargin, characterSize, pageRows} = sizeData[opts.size];
-        let hasHint = (opts.tracing) ? false : opts.hint;
-        const rowsPerPage = (hasHint) ? pageRows['hint'] : pageRows['noHint'];
 
-        doc.pipe(fs.createWriteStream(opts.filename));
+    const doc = new PDFDocument({size: opts.size});
+    // Remove remove non-chinese characters
+    const cleanCharacters = opts.characters.replace(/[^\u4E00-\u9FFF]+/g, '');
+    console.log(cleanCharacters);
+    const characterList = cleanCharacters.split('');
+    const { hintSize, hintSpacing, hintMargin, hintXCorrection, gridSpacing, gridSize, gridCountPerLine, marginTop, marginLeft, rowMargin, characterSize, pageRows} = sizeData[opts.size];
+    // Disable hints if tracing enabled
+    let hasHint = (opts.tracing) ? false : opts.hint;
+    const rowsPerPage = (hasHint) ? pageRows['hint'] : pageRows['noHint'];
 
-        let pageRow=0;
-        for (let i=0; i<characterList.length;i++) {
-            // Get the character data
+    doc.pipe(fs.createWriteStream(opts.filename));
+
+    let pageRow=0;
+    for (let i=0; i<characterList.length;i++) {
+        // Get the character data
+        try {
             const characterData = require(`hanzi-writer-data/${characterList[i]}`);
             pageRow = newPageHandler(pageRow);
             let yRowStart = marginTop + (gridSize*pageRow) + (rowMargin*pageRow);
             pageRow = drawCharacterGrid(doc, characterData, yRowStart, pageRow, opts.tracing);
         }
-
-        doc.end();
+        catch(e) {
+            if(e.message.includes('hanzi-writer-data')) console.log(`Could not find the character "${characterList[i]}". Skipping...`.yellow)
+        }
     }
+
+    doc.end();
 
 function drawCharacterGrid(doc, characterData, yStart, pageRow, hasTracing=false) {
     if(hasHint) {
