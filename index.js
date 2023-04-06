@@ -12,7 +12,7 @@ colors.enable();
 
 program
     .name('worksheet-generator')
-    .description('CLI to Generate Hanzi Worksheets')
+    .description('CLI to Generate Chinese Character Worksheets')
     .version('1.0.0')
     .option('-f, --filename', 'Where to save the generated file', 'example.pdf')
     .option('-c, --characters <strng>', 'Add the characters for the worksheet', '的一是不r 了人$我在有他这为之}大来以个中上们')

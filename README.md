@@ -1,4 +1,4 @@
-# Hanzi Worksheet Generator
+# Chinese Character Worksheet Generator
 
 A simple command-line utitlity to generate Hanzi Worksheets. Optimized for the Supernote with Top-bar or Right-bar.
 
@@ -65,5 +65,5 @@ No need to install these separately, just for convenience if you want to edit th
 - [ ] Option to add more practice lines
 - [ ] Color options
 - [ ] Option to display pinyin
-- [ ] Option to display definition
+- [ ] Option to display translation
 
