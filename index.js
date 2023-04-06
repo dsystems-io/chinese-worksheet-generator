@@ -13,7 +13,7 @@ colors.enable();
 program
     .name('worksheet-generator')
     .description('CLI to Generate Hanzi Worksheets')
-    .version('0.1.0')
+    .version('1.0.0')
     .option('-f, --filename', 'Where to save the generated file', 'example.pdf')
     .option('-c, --characters <strng>', 'Add the characters for the worksheet', '的一是不r 了人$我在有他这为之}大来以个中上们')
     .option('-s, --size <size>', 'Select Paper Size (A6)', 'A6')
