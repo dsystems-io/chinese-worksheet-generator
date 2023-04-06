@@ -1,48 +1,52 @@
 const fs = require('fs');
+const { Command } = require('commander');
+const colors = require('colors');
+const program = new Command();
+
 const PDFDocument = require('pdfkit');
 const SVGTOPDF = require('svg-to-pdfkit');
-const doc = new PDFDocument({size: 'A6'});
-const HanziWriter = require('hanzi-writer');     
+const HanziWriter = require('hanzi-writer');
+const sizeData = require('./sizeData.json');
+const sizesAvailable = Object.keys(sizeData);
+colors.enable();
 
-doc.pipe(fs.createWriteStream('test.pdf'));
+program
+    .name('worksheet-generator')
+    .description('CLI to Generate Hanzi Worksheets')
+    .version('0.1.0')
+    .option('-f, --filename', 'Where to save the generated file', 'example.pdf')
+    .option('-c, --characters <strng>', 'Add the characters for the worksheet', '的一是不了人我在有他这为之大来以个中上们')
+    .option('-s, --size <size>', 'Select Paper Size (A6)', 'A6')
+    .option('-hh, --hint', 'Include a hint line with stroke order', false)
+    .option('-t, --tracing', 'Include tracing prompts on the grid', false)
+    .parse();
 
-const hasTracing = true;
-let hasHint = true;
+    const opts = program.opts();
+    if(!sizesAvailable.includes(opts.size)) {
+        console.log(`Selected size [${opts.size}] is not supported. Select one of [${sizesAvailable.join('], [')}]`.red)
+    }
+    else {
+        const doc = new PDFDocument({size: opts.size});
+        const characterList = opts.characters.split('');
+        const { hintSize, hintSpacing, hintMargin, hintXCorrection, gridSpacing, gridSize, gridCountPerLine, marginTop, marginLeft, rowMargin, characterSize, pageRows} = sizeData[opts.size];
+        let hasHint = (opts.tracing) ? false : opts.hint;
+        const rowsPerPage = (hasHint) ? pageRows['hint'] : pageRows['noHint'];
 
-const hintSize = 10;
-const hintSpacing=1;
-const hintMargin=4;
-const hintXCorrection = 15; // Not sure why this is necessary
+        doc.pipe(fs.createWriteStream(opts.filename));
 
-const gridSpacing = 4;
-const gridSize = 35;
-const gridCountPerLine = 7;
+        let pageRow=0;
+        for (let i=0; i<characterList.length;i++) {
+            // Get the character data
+            const characterData = require(`hanzi-writer-data/${characterList[i]}`);
+            pageRow = newPageHandler(pageRow);
+            let yRowStart = marginTop + (gridSize*pageRow) + (rowMargin*pageRow);
+            pageRow = drawCharacterGrid(doc, characterData, yRowStart, pageRow, opts.tracing);
+        }
 
-const marginTop = 25;
-const marginLeft = 10;
-const rowMargin = 6;
+        doc.end();
+    }
 
-const characterSize = 45;
-const characterString = '我最喜歡的顏是綠色或紅色';
-const characterList = characterString.split('');
-
-if(hasTracing) hasHint = false;
-const rowsPerPage = (hasHint) ? 7 : 9;
-
-let pageRow=0;
-for (let i=0; i<characterList.length;i++) {
-    // Get the character data
-    const characterData = require(`hanzi-writer-data/${characterList[i]}`);
-    pageRow = newPageHandler(pageRow);
-    let yRowStart = marginTop + (gridSize*pageRow) + (rowMargin*pageRow);
-    pageRow = drawCharacterGrid(doc, characterData, yRowStart, pageRow);
-}
-
-
-// finalize the PDF and end the stream
-doc.end();
-
-function drawCharacterGrid(doc, characterData, yStart, pageRow) {
+function drawCharacterGrid(doc, characterData, yStart, pageRow, hasTracing=false) {
     if(hasHint) {
         yStart += ((hintMargin + hintSize) * pageRow);
         generateHint(doc, characterData, hintSize, marginLeft, yStart-(hintMargin + hintSize), hintSpacing);

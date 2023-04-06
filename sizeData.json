@@ -1,0 +1,16 @@
+{
+    "A6": {
+        "hintSize": 10,
+        "hintSpacing": 1,
+        "hintMargin": 4,
+        "hintXCorrection": 12,
+        "gridSpacing": 4,
+        "gridSize": 35,
+        "gridCountPerLine": 7,
+        "marginTop": 25,
+        "marginLeft": 10,
+        "rowMargin": 6,
+        "characterSize": 45,
+        "pageRows": { "hint": 7, "noHint": 9 }
+    }
+}
