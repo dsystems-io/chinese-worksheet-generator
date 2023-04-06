@@ -26,7 +26,7 @@ Default: `test.pdf`
 
 ### -c, --characters
 
-A string containing the characters to include in the worksheet. Each character will be split into a separate line. Don't include spaces or punctuation.
+A string containing the characters to include in the worksheet. Each character will be split into a separate line. The script will strip any non-characters from your input.
 
 Default: `的一是不了人我在有他这为之大来以个中上们`
 
